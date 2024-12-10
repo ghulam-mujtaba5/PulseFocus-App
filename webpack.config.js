@@ -1,11 +1,11 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './src/frontend/index.js',
+  mode: 'development', // Set mode to development (or 'production' when deploying)
+  entry: './src/frontend/index.js', // Update to your entry file
   output: {
-    path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
   },
   module: {
     rules: [
@@ -14,20 +14,18 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
-          },
         },
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-    }),
-  ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all', // Enables code splitting
+    },
+  },
   devServer: {
-    static: path.join(__dirname, 'dist'),  // Replace contentBase with static
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true,
     port: 3000,
   },
 };
