@@ -1,58 +1,58 @@
 # Node.js dependencies
 node_modules/
 
-# Build directories
-/dist/
-/build/
-/out/
+# # Build directories
+# /dist/
+# /build/
+# /out/
 
-# Electron build files
-/.vscode/
-*.log
-*.pid
-*.gz
-*.tsbuildinfo
+# # Electron build files
+# /.vscode/
+# *.log
+# *.pid
+# *.gz
+# *.tsbuildinfo
 
-# OS-specific files
-.DS_Store
-Thumbs.db
+# # OS-specific files
+# .DS_Store
+# Thumbs.db
 
-# System Files
-.idea/
-.vscode/
+# # System Files
+# .idea/
+# .vscode/
 
-# Dependency directories
-/.expo/
-/android/
-/ios/
+# # Dependency directories
+# /.expo/
+# /android/
+# /ios/
 
-# React app build folder
-/public/
-build/
+# # React app build folder
+# /public/
+# build/
 
-# dotenv environment variable files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# # dotenv environment variable files
+# .env
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
 
-# Mac and Windows system files
-*.swp
-*.swo
+# # Mac and Windows system files
+# *.swp
+# *.swo
 
-# npm debug log
-npm-debug.log*
+# # npm debug log
+# npm-debug.log*
 
-# Jest coverage folder
-/coverage/
+# # Jest coverage folder
+# /coverage/
 
-# JetBrains IDE files
-.idea/
+# # JetBrains IDE files
+# .idea/
 
-# Windows Installer folder
-*.cab
-*.msi
+# # Windows Installer folder
+# *.cab
+# *.msi
 
-# Electron packaging directory (default)
-/.electron/
+# # Electron packaging directory (default)
+# /.electron/
