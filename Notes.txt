@@ -47,3 +47,24 @@ personal-productivity-manager/
 ├── webpack.config.js            # Webpack config for bundling frontend (if needed)
 ├── README.md                    # Documentation for the app
 └── LICENSE                      # License file for the project
+
+
+
+How to Build and Run
+Install Dependencies:
+
+bash
+Copy code
+npm install
+Start the Development Server:
+
+bash
+Copy code
+npm start  # Start React in development mode
+npm run electron  # Launch Electron with the app
+Package the App for Windows:
+
+bash
+Copy code
+npm run make  # This will create an installer for Windows
+Publish on Microsoft Store: Use MSIX packaging (via tools like Electron Windows Store) to submit your app to the Microsoft Store.
