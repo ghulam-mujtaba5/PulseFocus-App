@@ -1,6 +1,18 @@
+// // src/frontend/index.js
+// import React from 'react';
+// import ReactDOM from 'react-dom/client';
+// import App from './App';
+
+// // Create a root container and render the App component inside it
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<App />);
+
+
+// src/frontend/index.js
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import App from './App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
-
+// Create a root container and render the App component inside it
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);

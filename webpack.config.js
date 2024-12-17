@@ -1,8 +1,9 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development', // Set mode to development (or 'production' when deploying)
-  entry: './src/frontend/index.js', // Update to your entry file
+  mode: 'development',
+  entry: './src/frontend/index.js', // Adjust to your entry point
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
@@ -12,20 +13,25 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
+        use: 'babel-loader',
+      },
+      {
+        test: /\.css$/, // This rule will handle CSS files
+        use: ['style-loader', 'css-loader'], // Use style-loader and css-loader for CSS files
       },
     ],
   },
-  optimization: {
-    splitChunks: {
-      chunks: 'all', // Enables code splitting
-    },
-  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html', // Path to your HTML template
+    }),
+  ],
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
     compress: true,
-    port: 3000,
+    port: 3001,
+    open: false,
   },
 };
