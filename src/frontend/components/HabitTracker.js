@@ -1,226 +1,184 @@
-// // // src/frontend/components/HabitTracker.js
-// // import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getHabits, addHabit, updateHabitStatus, deleteHabit } from '../../backend/services/taskService'; 
 
-// // // Styles for the Habit Tracker card
-// // const habitCardStyle = {
-// //   display: 'flex',
-// //   flexDirection: 'column',
-// //   justifyContent: 'center',
-// //   alignItems: 'center',
-// //   backgroundColor: '#fff',
-// //   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-// //   borderRadius: '8px',
-// //   padding: '20px',
-// //   margin: '10px',
-// //   width: '250px',
-// //   transition: 'transform 0.3s ease',
-// // };
+// Improved Styles for better UI/UX
+const habitTrackerStyle = {
+  padding: '20px',
+  fontFamily: 'Arial, sans-serif',
+  backgroundColor: '#f4f7f6',
+  borderRadius: '8px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  maxWidth: '600px',
+  margin: 'auto',
+};
 
-// // const habitTitleStyle = {
-// //   fontSize: '1.5rem',
-// //   fontWeight: 'bold',
-// //   marginBottom: '10px',
-// // };
+const habitHeaderStyle = {
+  fontSize: '2rem',
+  textAlign: 'center',
+  marginBottom: '20px',
+  color: '#333',
+};
 
-// // const habitDescriptionStyle = {
-// //   fontSize: '1rem',
-// //   color: '#555',
-// //   marginBottom: '15px',
-// //   textAlign: 'center',
-// // };
+const habitFormStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  marginBottom: '20px',
+};
 
-// // const habitButtonStyle = {
-// //   backgroundColor: '#4CAF50',
-// //   color: 'white',
-// //   padding: '10px 20px',
-// //   border: 'none',
-// //   borderRadius: '5px',
-// //   cursor: 'pointer',
-// //   fontWeight: 'bold',
-// //   transition: 'background-color 0.3s',
-// // };
+const habitInputStyle = {
+  padding: '8px 12px',
+  width: '80%',
+  fontSize: '14px',
+  border: '1px solid #ccc',
+  borderRadius: '4px',
+};
 
-// // const habitButtonDisabledStyle = {
-// //   backgroundColor: '#ccc',
-// //   cursor: 'not-allowed',
-// // };
+const habitButtonStyle = {
+  padding: '8px 12px',
+  backgroundColor: '#4CAF50',
+  color: 'white',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  transition: 'background-color 0.3s',
+};
 
-// // const HabitTracker = ({ taskName, taskDescription, onComplete }) => {
-// //   const [isCompleted, setIsCompleted] = useState(false);
+const habitListStyle = {
+  listStyle: 'none',
+  padding: '0',
+};
 
-// //   const handleComplete = () => {
-// //     setIsCompleted(true);
-// //     onComplete(taskName); // Callback to parent when task is marked complete
-// //   };
+const habitItemStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '10px',
+  borderBottom: '1px solid #ddd',
+};
 
-// //   return (
-// //     <div style={habitCardStyle}>
-// //       <h2 style={habitTitleStyle}>{taskName}</h2>
-// //       <p style={habitDescriptionStyle}>{taskDescription}</p>
-// //       <button
-// //         style={{ ...habitButtonStyle, ...(isCompleted && habitButtonDisabledStyle) }}
-// //         onClick={handleComplete}
-// //         disabled={isCompleted}
-// //       >
-// //         {isCompleted ? 'Completed' : 'Mark as Completed'}
-// //       </button>
-// //     </div>
-// //   );
-// // };
+const habitCompletedStyle = {
+  textDecoration: 'line-through',
+  color: '#888',
+};
 
-// // export default HabitTracker;
-// import React, { useEffect, useState } from 'react';
-// import { getHabits, addHabit, updateHabitStatus, deleteHabit } from '../../backend/services/taskService';
+const deleteButtonStyle = {
+  backgroundColor: 'red',
+  color: 'white',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  padding: '5px 10px',
+  fontSize: '12px',
+};
 
-// function HabitTracker() {
-//     const [habits, setHabits] = useState([]);
-//     const [newHabit, setNewHabit] = useState('');
+const HabitTracker = ({ taskName, taskDescription, onComplete }) => {
+  const [habitStatus, setHabitStatus] = useState(false);
+  const [habitList, setHabitList] = useState([]);
+  const [newHabit, setNewHabit] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-//     useEffect(() => {
-//         async function fetchHabits() {
-//             const fetchedHabits = await getHabits();
-//             setHabits(fetchedHabits);
-//         }
-//         fetchHabits();
-//     }, []);
-
-//     const handleAddHabit = async () => {
-//         if (!newHabit) return;
-//         const addedHabit = await addHabit(newHabit);
-//         if (addedHabit) {
-//             setHabits([...habits, ...addedHabit]);
-//             setNewHabit('');
-//         }
-//     };
-
-//     const handleToggleStatus = async (id, currentStatus) => {
-//         const updatedHabit = await updateHabitStatus(id, !currentStatus);
-//         if (updatedHabit) {
-//             setHabits(habits.map(habit => (habit.id === id ? { ...habit, status: !currentStatus } : habit)));
-//         }
-//     };
-
-//     const handleDeleteHabit = async (id) => {
-//         const deletedHabit = await deleteHabit(id);
-//         if (deletedHabit) {
-//             setHabits(habits.filter(habit => habit.id !== id));
-//         }
-//     };
-
-//     return (
-//         <div className="habit-tracker">
-//             <h1>Habit Tracker</h1>
-//             <div className="habit-form">
-//                 <input
-//                     type="text"
-//                     placeholder="Enter new habit"
-//                     value={newHabit}
-//                     onChange={(e) => setNewHabit(e.target.value)}
-//                 />
-//                 <button onClick={handleAddHabit}>Add Habit</button>
-//             </div>
-//             <ul>
-//                 {habits.map((habit) => (
-//                     <li key={habit.id}>
-//                         <span
-//                             style={{ textDecoration: habit.status ? 'line-through' : 'none', cursor: 'pointer' }}
-//                             onClick={() => handleToggleStatus(habit.id, habit.status)}
-//                         >
-//                             {habit.name}
-//                         </span>
-//                         <button onClick={() => handleDeleteHabit(habit.id)}>Delete</button>
-//                     </li>
-//                 ))}
-//             </ul>
-//         </div>
-//     );
-// }
-
-// export default HabitTracker;
-import React, { useEffect, useState } from 'react';
-import { getHabits, addHabit, updateHabitStatus, deleteHabit } from '../../backend/services/taskService';
-
-function HabitTracker() {
-    const [habits, setHabits] = useState([]);
-    const [newHabit, setNewHabit] = useState('');
-
-    useEffect(() => {
-        async function fetchHabits() {
-            const fetchedHabits = await getHabits();
-            setHabits(fetchedHabits);
-        }
-        fetchHabits();
-    }, []);
-
-    const handleAddHabit = async () => {
-        if (!newHabit) return;
-        const addedHabit = await addHabit(newHabit);
-        if (addedHabit) {
-            setHabits([...habits, ...addedHabit]);
-            setNewHabit('');
-        }
+  // Fetching habits from the backend
+  useEffect(() => {
+    const fetchHabits = async () => {
+      setLoading(true);
+      try {
+        const habits = await getHabits();
+        setHabitList(habits);
+        setError('');
+      } catch (err) {
+        setError('Error fetching habits.');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleToggleStatus = async (id, currentStatus) => {
-        const updatedHabit = await updateHabitStatus(id, !currentStatus);
-        if (updatedHabit) {
-            setHabits(habits.map(habit => (habit.id === id ? { ...habit, status: !currentStatus } : habit)));
-        }
-    };
+    fetchHabits();
+  }, []);
 
-    const handleDeleteHabit = async (id) => {
-        const deletedHabit = await deleteHabit(id);
-        if (deletedHabit) {
-            setHabits(habits.filter(habit => habit.id !== id));
-        }
-    };
+  // Handle status change of a habit
+  const handleHabitStatusChange = async (id, currentStatus) => {
+    try {
+      await updateHabitStatus(id, !currentStatus);
+      const updatedHabits = habitList.map(habit =>
+        habit.id === id ? { ...habit, status: !currentStatus } : habit
+      );
+      setHabitList(updatedHabits);
+    } catch (err) {
+      setError('Error updating habit status.');
+    }
+  };
 
-    return (
-        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-            <h1>Habit Tracker</h1>
-            <div style={{ marginBottom: '20px' }}>
-                <input
-                    type="text"
-                    placeholder="Enter new habit"
-                    value={newHabit}
-                    onChange={(e) => setNewHabit(e.target.value)}
-                    style={{ padding: '8px', fontSize: '14px', marginRight: '10px' }}
-                />
-                <button onClick={handleAddHabit} style={{ padding: '8px', fontSize: '14px' }}>
-                    Add Habit
-                </button>
+  // Handle adding a new habit
+  const handleAddHabit = async () => {
+    if (!newHabit.trim()) return;
+    setLoading(true);
+    try {
+      await addHabit(newHabit);
+      setNewHabit('');
+      const updatedHabits = await getHabits();
+      setHabitList(updatedHabits);
+      setError('');
+    } catch (err) {
+      setError('Error adding new habit.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle deleting a habit
+  const handleDeleteHabit = async (id) => {
+    try {
+      await deleteHabit(id);
+      const updatedHabits = habitList.filter(habit => habit.id !== id);
+      setHabitList(updatedHabits);
+      setError('');
+    } catch (err) {
+      setError('Error deleting habit.');
+    }
+  };
+
+  return (
+    <div style={habitTrackerStyle}>
+      <h1 style={habitHeaderStyle}>Habit Tracker</h1>
+      <div style={habitFormStyle}>
+        <input
+          type="text"
+          placeholder="Enter new habit"
+          value={newHabit}
+          onChange={(e) => setNewHabit(e.target.value)}
+          style={habitInputStyle}
+        />
+        <button onClick={handleAddHabit} style={habitButtonStyle} disabled={loading}>
+          {loading ? 'Adding...' : 'Add Habit'}
+        </button>
+      </div>
+
+      {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
+
+      <ul style={habitListStyle}>
+        {habitList.length === 0 && !loading && (
+          <li style={{ textAlign: 'center', padding: '10px' }}>No habits found!</li>
+        )}
+        {habitList.map((habit) => (
+          <li key={habit.id} style={habitItemStyle}>
+            <span
+              style={habit.status ? habitCompletedStyle : {}}
+              onClick={() => handleHabitStatusChange(habit.id, habit.status)}
+            >
+              {habit.name}
+            </span>
+            <div>
+              <button onClick={() => handleDeleteHabit(habit.id)} style={deleteButtonStyle}>
+                Delete
+              </button>
             </div>
-            <ul style={{ listStyle: 'none', padding: '0' }}>
-                {habits.map((habit) => (
-                    <li key={habit.id} style={{ margin: '10px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span
-                            style={{
-                                textDecoration: habit.status ? 'line-through' : 'none',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleToggleStatus(habit.id, habit.status)}
-                        >
-                            {habit.name}
-                        </span>
-                        <button
-                            onClick={() => handleDeleteHabit(habit.id)}
-                            style={{
-                                padding: '5px 10px',
-                                fontSize: '12px',
-                                backgroundColor: 'red',
-                                color: 'white',
-                                border: 'none',
-                                cursor: 'pointer',
-                                borderRadius: '4px',
-                            }}
-                        >
-                            Delete
-                        </button>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
-}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default HabitTracker;
