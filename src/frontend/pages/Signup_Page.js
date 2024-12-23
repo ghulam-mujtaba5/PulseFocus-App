@@ -1,10 +1,9 @@
-
-// // // //src\frontend\pages\Dashboard.js
+// // // // src/frontend/pages/Signup_Page.js
 // // // import React, { useState, useEffect } from 'react';
 // // // import { supabase } from '../../services/supabaseClient'; // Import Supabase client
-// // // import Signup from '../components/Signup'; // Update path based on actual location
+// // // import Signup from '../components/Signup'; // Import Signup component
 
-// // // const Dashboard = () => {
+// // // const SignupPage = () => {
 // // //   const [user, setUser] = useState(null);
 // // //   const [loading, setLoading] = useState(true);  // Track loading state
 
@@ -18,7 +17,7 @@
 // // //       }
 // // //       setLoading(false);  // Stop loading once session is checked
 // // //     };
-    
+
 // // //     getSession();
 // // //   }, []);
 
@@ -32,169 +31,138 @@
 // // //     return <Signup />;
 // // //   }
 
-// // //   // If the user is logged in, render the dashboard content
+// // //   // If the user is logged in, render the content or redirect to another page
 // // //   return (
 // // //     <div className="dashboard">
-// // //       <h1>Dashboard</h1>
+// // //       <h1>Welcome to Your Dashboard</h1>
 // // //       {/* Add your dashboard content here */}
 // // //     </div>
 // // //   );
 // // // };
 
-// // // export default Dashboard;
-// // // src/frontend/pages/Dashboard.js
+// // // export default SignupPage;
 
+// // // src/frontend/pages/Signup_Page.js
 // // import React, { useState, useEffect } from 'react';
 // // import { supabase } from '../../services/supabaseClient'; // Import Supabase client
-// // import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+// // import Signup from '../components/Signup'; // Import Signup component
 
-// // const Dashboard = () => {
+// // const SignupPage = () => {
 // //   const [user, setUser] = useState(null);
-// //   const [loading, setLoading] = useState(true); // Track loading state
-// //   const navigate = useNavigate(); // useNavigate hook for programmatic navigation
+// //   const [loading, setLoading] = useState(true);  // Track loading state
 
 // //   // Check if the user is logged in when the component mounts
 // //   useEffect(() => {
 // //     const getSession = async () => {
 // //       const { data: { session } } = await supabase.auth.getSession(); // Get current session asynchronously
+// //       console.log('Session:', session); // Debug the session state
 // //       if (session) {
 // //         setUser(session.user); // Set user if logged in
-// //       } else {
-// //         navigate('/login'); // Redirect to login if not logged in
 // //       }
-// //       setLoading(false); // Stop loading once session is checked
+// //       setLoading(false);  // Stop loading once session is checked
 // //     };
 
 // //     getSession();
-// //   }, [navigate]);
+// //   }, []);
 
-// //   // Show a loading indicator until session is checked
+// //   // Show a loading indicator or signup component until session is ready
 // //   if (loading) {
-// //     return <div>Loading...</div>;
+// //     return <div>Loading...</div>; // You can replace this with a loading spinner
 // //   }
 
-// //   // Render dashboard content if user is logged in
-// //   if (user) {
-// //     return (
-// //       <div className="dashboard">
-// //         <h1>Welcome to your Dashboard</h1>
-// //         {/* Add your dashboard content here */}
-// //       </div>
-// //     );
+// //   // Show Signup component if user is not logged in
+// //   if (!user) {
+// //     return <Signup />;
 // //   }
 
-// //   // If user is not logged in, do not render the dashboard
-// //   return null;
+// //   // If the user is logged in, render the content or redirect to another page
+// //   return (
+// //     <div className="dashboard">
+// //       <h1>Welcome to Your Dashboard</h1>
+// //       {/* Add your dashboard content here */}
+// //     </div>
+// //   );
 // // };
 
-// // export default Dashboard;
-
-// // src/frontend/pages/Dashboard.js
+// // export default SignupPage;
 // import React, { useState, useEffect } from 'react';
 // import { supabase } from '../../services/supabaseClient'; // Import Supabase client
+// import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+// import Signup from '../components/Signup'; // Import Signup component
 
-// const Dashboard = () => {
+// const SignupPage = () => {
 //   const [user, setUser] = useState(null);
 //   const [loading, setLoading] = useState(true);  // Track loading state
+//   const navigate = useNavigate(); // useNavigate hook for programmatic navigation
 
 //   // Check if the user is logged in when the component mounts
 //   useEffect(() => {
 //     const getSession = async () => {
 //       const { data: { session } } = await supabase.auth.getSession(); // Get current session asynchronously
+//       console.log('Session:', session); // Debug the session state
 //       if (session) {
 //         setUser(session.user); // Set user if logged in
+//         navigate('/login'); // Redirect to login page if already logged in
 //       }
 //       setLoading(false);  // Stop loading once session is checked
 //     };
 
 //     getSession();
-//   }, []);
+//   }, [navigate]); // Add navigate as dependency to trigger after redirect
 
 //   // Show a loading indicator or signup component until session is ready
 //   if (loading) {
 //     return <div>Loading...</div>; // You can replace this with a loading spinner
 //   }
 
-//   // If the user is not logged in, show a signup component
+//   // Show Signup component if user is not logged in
 //   if (!user) {
-//     return <div>Please log in first.</div>;
+//     return <Signup />;
 //   }
 
-//   // If the user is logged in, render the dashboard content
-//   return (
-//     <div className="dashboard">
-//       <h1>Welcome to your Dashboard</h1>
-//       {/* Add your dashboard content here */}
-//     </div>
-//   );
+//   return null; // Don't render anything here since the user will be redirected
 // };
 
-// export default Dashboard;
-
-// src/frontend/pages/Dashboard.js
-
+// export default SignupPage;
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient'; // Import Supabase client
-import TaskManager from './TaskManager';  // Import TaskManager
-import ProgressChart from '../components/ProgressChart';  // Import ProgressChart
-import HabitTracker from '../components/HabitTracker'; // Import HabitTracker
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import Signup from '../components/Signup'; // Import Signup component
 
-const Dashboard = () => {
-  const [user, setUser] = useState(null); // Store user data
-  const [loading, setLoading] = useState(true); // Track loading state
+const SignupPage = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);  // Track loading state
+  const navigate = useNavigate(); // useNavigate hook for programmatic navigation
 
   // Check if the user is logged in when the component mounts
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession(); // Get current session asynchronously
+      console.log('Session:', session); // Debug the session state
       if (session) {
         setUser(session.user); // Set user if logged in
+        // Delay navigation to allow the session to be set
+        setTimeout(() => {
+          navigate('/login'); // Redirect to login page if already logged in
+        }, 0); // This ensures the redirection is executed after session state updates
       }
       setLoading(false);  // Stop loading once session is checked
     };
 
     getSession();
-  }, []);
+  }, [navigate]); // Add navigate as dependency to trigger after redirect
 
-  // Show a loading indicator while session is being checked
+  // Show a loading indicator or signup component until session is ready
   if (loading) {
     return <div>Loading...</div>; // You can replace this with a loading spinner
   }
 
-  // If the user is not logged in, show a signup component
+  // Show Signup component if user is not logged in
   if (!user) {
-    return <div>Please log in first.</div>;
+    return <Signup />;
   }
 
-  // If the user is logged in, render the dashboard content
-  return (
-    <div className="dashboard">
-      <h1>Welcome to your Dashboard</h1>
-      
-      {/* Add HabitTracker components for different tasks */}
-      <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <HabitTracker
-          taskName="Morning Workout"
-          taskDescription="Start your day with some exercise to boost energy."
-          onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
-        />
-        <HabitTracker
-          taskName="Read a Book"
-          taskDescription="Spend 30 minutes reading a personal development book."
-          onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
-        />
-        <HabitTracker
-          taskName="Drink Water"
-          taskDescription="Drink a glass of water after waking up."
-          onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
-        />
-      </div>
-      
-      {/* Display ProgressChart and TaskManager */}
-      <ProgressChart />
-      <TaskManager />
-    </div>
-  );
+  return null; // Don't render anything here since the user will be redirected
 };
 
-export default Dashboard;
+export default SignupPage;
