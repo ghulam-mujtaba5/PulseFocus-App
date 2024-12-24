@@ -1,8 +1,7 @@
-
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import * as activeWin from 'active-win';
+import * as activeWin from 'active-win';  // Corrected import statement
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,10 +20,10 @@ function createWindow() {
   });
 
   // Use relative path for production
-  const indexPath = 
+  const indexPath =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:3001'  // URL for development environment
-      :path.join(__dirname, '..', '..', 'dist', 'index.html');
+      : path.join(__dirname, '..', '..', 'dist', 'index.html');
 
   if (process.env.NODE_ENV === 'development') {
     mainWindow.loadURL(indexPath);
@@ -41,7 +40,7 @@ function createWindow() {
 function trackActiveWindow() {
   setInterval(async () => {
     try {
-      const currentWindow = await activeWin.default(); // Updated to use `.default`
+      const currentWindow = await activeWin(); // Corrected to use activeWin() directly
       if (mainWindow) {
         mainWindow.webContents.send('active-window', currentWindow);
       }
