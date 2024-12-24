@@ -255,9 +255,62 @@
 //   }
 // });
 
-const { app, BrowserWindow } = require('electron');
+// const { app, BrowserWindow } = require('electron');
+// const path = require('path');
+
+// let mainWindow;
+
+// // Function to create the window
+// function createWindow() {
+//   mainWindow = new BrowserWindow({
+//     width: 800,
+//     height: 600,
+//     webPreferences: {
+//       contextIsolation: true,  // Improves security
+//       nodeIntegration: false,  // Disables Node.js integration in the renderer process
+//     },
+//   });
+
+//   // Check if we are in development mode or production mode
+//   if (process.env.NODE_ENV === 'development') {
+//     // In development, load the local server (Webpack Dev Server)
+//     mainWindow.loadURL('http://localhost:3001');  // Ensure this matches your React dev server's URL
+//     mainWindow.webContents.openDevTools();  // This opens DevTools automatically in Electron
+//   } else {
+//     // In production, load the bundled index.html file from the build folder
+//     const indexPath = path.join(__dirname, '..', 'build', 'index.html');  // Adjust path based on your structure
+//     mainWindow.loadFile(indexPath);  // Make sure this path is correct for your production build
+//   }
+
+//   // Event when the window is closed
+//   mainWindow.on('closed', () => {
+//     mainWindow = null;
+//   });
+// }
+
+// // Event when Electron has finished initialization
+// app.on('ready', createWindow);
+
+// // Quit the app when all windows are closed (except on macOS)
+// app.on('window-all-closed', () => {
+//   if (process.platform !== 'darwin') {
+//     app.quit();
+//   }
+// });
+
+// // Re-create the window when the app is activated (macOS behavior)
+// app.on('activate', () => {
+//   if (BrowserWindow.getAllWindows().length === 0) {
+//     createWindow();
+//   }
+// });
+
+
+const { app, BrowserWindow, ipcMain } = require('electron');
+const activeWin = require('active-win');
 const path = require('path');
 
+// Declare the main window variable
 let mainWindow;
 
 // Function to create the window
@@ -268,6 +321,7 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,  // Improves security
       nodeIntegration: false,  // Disables Node.js integration in the renderer process
+      preload: path.join(__dirname, 'preload.js'),  // Use preload for better isolation
     },
   });
 
@@ -288,8 +342,21 @@ function createWindow() {
   });
 }
 
+// Track the active window and send this data to the renderer
+function trackActiveWindow() {
+  setInterval(async () => {
+    const currentWindow = await activeWin();  // Get the current active window
+    if (mainWindow) {
+      mainWindow.webContents.send('active-window', currentWindow);  // Send active window data to renderer process
+    }
+  }, 1000); // Update every second
+}
+
 // Event when Electron has finished initialization
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+  trackActiveWindow();  // Start tracking active window as soon as the app is ready
+});
 
 // Quit the app when all windows are closed (except on macOS)
 app.on('window-all-closed', () => {

@@ -124,6 +124,7 @@
 //     return data;
 // }
 
+//src\backend\services\taskService.js
 import { supabase } from '../config';
 
 // Fetch all tasks for a specific user
@@ -158,12 +159,12 @@ export async function getHabits(userId) {
     }
 }
 
-// Add a new task
-export async function addTask(title, description, userId) {
+// Add a new task (including due_date and status)
+export async function addTask(title, description, userId, dueDate, status = 'Pending') {
     try {
         const { data, error } = await supabase
             .from('tasks')
-            .insert([{ title, description, user_id: userId }]);
+            .insert([{ title, description, user_id: userId, due_date: dueDate, status }]);
 
         if (error) throw error;
         return data;
@@ -174,11 +175,11 @@ export async function addTask(title, description, userId) {
 }
 
 // Add a new habit
-export async function addHabit(title, userId) {
+export async function addHabit(name, userId) {
     try {
         const { data, error } = await supabase
             .from('habits')
-            .insert([{ title, user_id: userId }]);
+            .insert([{ name, user_id: userId }]);
 
         if (error) throw error;
         return data;
@@ -188,12 +189,12 @@ export async function addHabit(title, userId) {
     }
 }
 
-// Update a task's status
-export async function updateTaskStatus(id, status) {
+// Update a task's status (using 'completed' boolean)
+export async function updateTaskStatus(id, completed) {
     try {
         const { data, error } = await supabase
             .from('tasks')
-            .update({ status })
+            .update({ completed })
             .eq('id', id);
 
         if (error) throw error;
@@ -248,6 +249,68 @@ export async function deleteHabit(id) {
         return data;
     } catch (error) {
         console.error('Error deleting habit:', error);
+        return null;
+    }
+}
+
+// Add a new goal (progress tracking)
+export async function addGoal(title, targetDate, userId) {
+    try {
+        const { data, error } = await supabase
+            .from('goals')
+            .insert([{ title, target_date: targetDate, user_id: userId }]);
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error adding goal:', error);
+        return null;
+    }
+}
+
+// Update a goal's progress
+export async function updateGoalProgress(id, progress) {
+    try {
+        const { data, error } = await supabase
+            .from('goals')
+            .update({ progress })
+            .eq('id', id);
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error updating goal progress:', error);
+        return null;
+    }
+}
+
+// Add a new reminder
+export async function addReminder(title, description, reminderTime, userId) {
+    try {
+        const { data, error } = await supabase
+            .from('reminders')
+            .insert([{ title, description, reminder_time: reminderTime, user_id: userId }]);
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error adding reminder:', error);
+        return null;
+    }
+}
+
+// Delete a reminder
+export async function deleteReminder(id) {
+    try {
+        const { data, error } = await supabase
+            .from('reminders')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error deleting reminder:', error);
         return null;
     }
 }
