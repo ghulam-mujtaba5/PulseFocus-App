@@ -166,6 +166,7 @@
 
 // export default Signup;
 // src/frontend/components/Signup.js
+
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { signUp } from '../../services/authService'; // Import the signUp function

@@ -124,6 +124,7 @@
 // };
 
 // export default SignupPage;
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient'; // Import Supabase client
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
