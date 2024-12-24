@@ -38,8 +38,8 @@
 // src/frontend/pages/TaskManager.js
 
 import React, { useState } from 'react';
-import { useTask } from '../hooks/useTask';  // Assuming you have a custom hook for task management
-import TaskCard from '../components/TaskCard';
+import { useTask } from '../hooks/useTask.js';  // Assuming you have a custom hook for task management
+import TaskCard from '../components/TaskCard.js';
 
 const TaskManager = () => {
   const [taskName, setTaskName] = useState('');

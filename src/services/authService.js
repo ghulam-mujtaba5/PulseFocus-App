@@ -45,7 +45,7 @@
 //   }
 // };
 // src/services/authService.js
-import { supabase } from './supabaseClient';
+import { supabase } from './supabaseClient.js';
 
 // SignUp function to create a new user and store user data in the 'users' table
 export const signUp = async (email, password, name) => {

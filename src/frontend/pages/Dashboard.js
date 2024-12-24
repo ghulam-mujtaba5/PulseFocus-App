@@ -1026,11 +1026,11 @@
 // export default Dashboard;
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../services/supabaseClient'; // Import Supabase client
-import TaskManager from '../components/TaskManager'; // Import TaskManager
-import ProgressChart from '../components/ProgressChart'; // Import ProgressChart
-import HabitTracker from '../components/HabitTracker'; // Import HabitTracker
-import AppUsageTracker from '../components/AppUsageTracker'; // Import AppUsageTracker
+import { supabase } from '../../services/supabaseClient.js'; // Import Supabase client
+import TaskManager from '../components/TaskManager.js'; // Import TaskManager
+import ProgressChart from '../components/ProgressChart.js'; // Import ProgressChart
+import HabitTracker from '../components/HabitTracker.js'; // Import HabitTracker
+import AppUsageTracker from '../components/AppUsageTracker.js'; // Import AppUsageTracker
 
 const Dashboard = () => {
   const [user, setUser] = useState(null); // Store user data

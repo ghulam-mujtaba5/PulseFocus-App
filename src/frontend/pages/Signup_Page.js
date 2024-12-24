@@ -167,11 +167,13 @@
 // };
 
 // export default SignupPage;
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../services/supabaseClient'; // Import Supabase client
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import Signup from '../components/Signup'; // Import Signup component
 
+
+
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../../services/supabaseClient.js'; // Add .js extension here
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import Signup from '../components/Signup.js'; // Add .js extension here
 const SignupPage = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);  // Track loading state

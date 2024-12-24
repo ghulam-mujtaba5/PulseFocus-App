@@ -1,8 +1,11 @@
 
-//src\backend\main.js
-const { app, BrowserWindow, ipcMain } = require('electron');
-const activeWin = require('active-win');
-const path = require('path');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import * as activeWin from 'active-win';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let mainWindow;
 
@@ -17,12 +20,17 @@ function createWindow() {
     },
   });
 
+  // Use relative path for production
+  const indexPath = 
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3001'  // URL for development environment
+      :path.join(__dirname, '..', '..', 'dist', 'index.html');
+
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:3001');
+    mainWindow.loadURL(indexPath);
     mainWindow.webContents.openDevTools();
   } else {
-    const indexPath = path.join(__dirname, 'build', 'index.html');
-    mainWindow.loadFile(indexPath);
+    mainWindow.loadFile(indexPath);  // Load index.html using relative path
   }
 
   mainWindow.on('closed', () => {
@@ -33,7 +41,7 @@ function createWindow() {
 function trackActiveWindow() {
   setInterval(async () => {
     try {
-      const currentWindow = await activeWin();
+      const currentWindow = await activeWin.default(); // Updated to use `.default`
       if (mainWindow) {
         mainWindow.webContents.send('active-window', currentWindow);
       }

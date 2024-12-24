@@ -115,9 +115,9 @@
 // export default LoginPage;
 
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../services/supabaseClient'; // Import Supabase client
+import { supabase } from '../../services/supabaseClient.js'; // Import Supabase client
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import Login from '../components/Login'; // Import Login component
+import Login from '../components/Login.js'; // Import Login component
 
 const LoginPage = () => {
   const [user, setUser] = useState(null);
