@@ -188,7 +188,7 @@ const SignupPage = () => {
         setUser(session.user); // Set user if logged in
         // Delay navigation to allow the session to be set
         setTimeout(() => {
-          navigate('/login'); // Redirect to login page if already logged in
+          navigate('/Login_Page'); // Redirect to login page if already logged in
         }, 0); // This ensures the redirection is executed after session state updates
       }
       setLoading(false);  // Stop loading once session is checked
