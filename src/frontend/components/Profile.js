@@ -37,7 +37,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { getCurrentUser } from '../services/authService'; // Adjust the path according to your folder structure
+import { getCurrentUser } from '../services/authService.js'; // Adjust the path according to your folder structure
 
 const Profile = () => {
   const [user, setUser] = useState(null);

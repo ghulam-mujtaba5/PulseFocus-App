@@ -2,13 +2,16 @@ npm install electron --save-dev
 npm start
 
 personal-productivity-manager/
+├──dist/
+│   ├──bundle.js
+│   ├──index.html
 ├── assets/                      # App assets like images, icons, fonts, etc.
 │   ├── icons/                   # App icons (e.g., for the Windows taskbar)
 │   ├── images/                  # Backgrounds or other images for the app
 │   └── logo.png                 # Logo of the app
 ├── node_modules/                # Node.js modules (auto-generated)
 ├── public/                      # Static files for React (e.g., index.html, favicons)
-│   └── index.html               # Main HTML file for the React app
+│                
 ├── src/                         # Main source code for both frontend and backend
 │   ├── backend/                 # Backend-specific files (Node.js, Electron main process)
 │   │   ├── db/                  # Database-related logic (SQLite, etc.)
@@ -18,6 +21,7 @@ personal-productivity-manager/
                 Service.js
 │   │   ├── auth/                # User authentication related files
 │   │   │   └── authService.js   # Authentication logic (login, registration)
+│   │   ├──index.html            # Main HTML file for the React app
 │   │   ├── main.js              # Main process file (Electron)
 │   │   ├── preload.js           # Preload script for Electron (bridging renderer and main)
 │   │   └── config.js            # Configuration files (for port, API keys, etc.)

@@ -1781,6 +1781,7 @@
 // };
 
 // export default TaskManager;
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient.js'; // Assuming supabaseClient.js is already set up
 import { motion } from 'framer-motion';

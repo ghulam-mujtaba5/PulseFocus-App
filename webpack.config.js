@@ -119,6 +119,9 @@
 //     open: false,
 //   },
 // };
+
+
+//webpack.config.js
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { fileURLToPath } from 'url';
@@ -150,9 +153,10 @@ export default {
       },
     ],
   },
+
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html', // Path to your HTML template
+      template: './src/backend/index.html', // Path to your HTML template
     }),
   ],
   devServer: {
