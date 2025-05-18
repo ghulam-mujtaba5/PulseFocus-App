@@ -2,7 +2,11 @@
 
 PulseFocus is a cross-platform personal productivity manager built with React and Electron. It helps you organize tasks, track habits, and visualize your progress—all in a beautiful, modern desktop app.
 
-![PulseFocus Preview](public/Project_preview1.png)
+## Preview
+
+| Dashboard | Task Manager | Progress Chart |
+|-----------|-------------|---------------|
+| ![Dashboard](public/Project_preview1.png) | ![Task Manager](public/Project_preview2.png) | ![Progress Chart](public/Project_preview3.png) |
 
 ## Features
 
@@ -54,11 +58,6 @@ npm run make        # Creates an installer for Windows
 ### 4. Publish to Microsoft Store
 
 Use MSIX packaging (via tools like Electron Windows Store) to submit your app to the Microsoft Store.
-
-## Screenshots
-
-![Dashboard](public/Project_preview2.png)
-![Task Manager](public/Project_preview3.png)
 
 ## License
 
