@@ -6,7 +6,7 @@ PulseFocus is a cross-platform personal productivity manager built with React an
 
 | Dashboard | Task Manager | Progress Chart |
 |-----------|-------------|---------------|
-| ![Dashboard](public/Project_preview1.png) | ![Task Manager](public/Project_preview2.png) | ![Progress Chart](public/Project_preview3.png) |
+| ![Dashboard](public/Project_preview1.png) | ![Progress Chart](public/Project_preview2.png) | ![Task Manager](public/Project_preview3.png) |
 
 ## Features
 
