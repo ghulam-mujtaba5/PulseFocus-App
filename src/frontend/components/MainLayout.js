@@ -53,7 +53,7 @@ const MainLayout = ({ children, onNav }) => {
         <CssBaseline />
         <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1, WebkitAppRegion: 'drag', userSelect: 'none' }} elevation={2}>
           <Toolbar sx={{ minHeight: 40, px: 1 }}>
-            <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' }, WebkitAppRegion: 'no-drag' }}>
+            <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, WebkitAppRegion: 'no-drag' }}>
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 600, letterSpacing: 1 }}>

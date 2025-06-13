@@ -20,19 +20,34 @@ const theme = createTheme({
   },
 });
 
+import { useNavigate } from 'react-router-dom';
+
 function App() {
+  // Custom navigation handler for MainLayout
+  const NavigateWrapper = () => {
+    const navigate = useNavigate();
+    const handleNav = (page) => {
+      if (page === 'dashboard') navigate('/dashboard');
+      else if (page === 'tasks') navigate('/dashboard'); // Adjust if you have a separate tasks page
+      else if (page === 'profile') navigate('/dashboard'); // Adjust if you have a profile page/route
+      else navigate('/');
+    };
+    return (
+      <MainLayout onNav={handleNav}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/Signup_Page" />} />
+          <Route path="/Signup_Page" element={<SignupPage />} />
+          <Route path="/Login_Page" element={<LoginPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </MainLayout>
+    );
+  };
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<Navigate to="/Signup_Page" />} />
-            <Route path="/Signup_Page" element={<SignupPage />} />
-            <Route path="/Login_Page" element={<LoginPage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-        </MainLayout>
+        <NavigateWrapper />
       </Router>
     </ThemeProvider>
   );
