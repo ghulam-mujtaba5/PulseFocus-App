@@ -1,0 +1,14 @@
+/* src/frontend/styles/dashboard.css */
+.dashboard {
+    padding: 20px;
+  }
+  
+  .task-manager, .habit-tracker {
+    margin: 20px;
+  }
+  
+  .task-list {
+    display: flex;
+    flex-direction: column;
+  }
+  

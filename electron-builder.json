@@ -1,0 +1,35 @@
+{
+  "appId": "com.example.productivity",
+  "productName": "Pulse Focus App",
+  "win": {
+    "target": "nsis",  
+    "icon": "assets/icons/app-icon.ico"  
+  },
+  "directories": {
+    "output": "dist"  
+  },
+  "files": [
+    "dist/**/*"  
+  ],
+  "extraResources": [
+    "assets/**/*"  
+  ],
+  "build": {
+    "appId": "com.example.productivity",
+    "productName": "Pulse Focus App",
+    "win": {
+      "target": "nsis",  
+      "icon": "assets/icons/app-icon.ico"
+    },
+    "directories": {
+      "output": "dist"  
+    },
+    "files": [
+      "dist/**/*",  
+      "assets/**/*"  
+    ],
+    "extraResources": [
+      "assets/**/*"  
+    ]
+  }
+}
