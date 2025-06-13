@@ -71,7 +71,9 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+
 import activeWin from 'active-win';
+const db = require('./db/db.js');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -105,19 +107,63 @@ function createWindow() {
   });
 }
 
+
+// Helper to categorize window
+const CATEGORY_MAP = {
+  focus: ['code', 'editor', 'word', 'excel', 'notepad', 'chrome', 'firefox', 'edge'],
+  meeting: ['zoom', 'teams', 'meet', 'skype', 'webex'],
+  break: ['spotify', 'vlc', 'music', 'video', 'game'],
+  distraction: ['twitter', 'facebook', 'instagram', 'youtube', 'tiktok', 'reddit'],
+};
+function getCategory(window) {
+  if (!window || !window.owner || !window.owner.name) return 'other';
+  const name = window.owner.name.toLowerCase();
+  for (const [cat, keywords] of Object.entries(CATEGORY_MAP)) {
+    if (keywords.some((kw) => name.includes(kw))) return cat;
+  }
+  return 'other';
+}
+
 app.on('ready', () => {
   createWindow();
-  // Start tracking active window and send to renderer
   setInterval(async () => {
     try {
       const currentWindow = await activeWin();
       if (mainWindow) {
         mainWindow.webContents.send('active-window', currentWindow);
       }
+      // Persist to SQLite
+      if (currentWindow && currentWindow.owner && currentWindow.owner.name) {
+        const category = getCategory(currentWindow);
+        db.run(
+          'INSERT INTO activity_logs (timestamp, app_name, window_title, category) VALUES (?, ?, ?, ?)',
+          [
+            Date.now(),
+            currentWindow.owner.name,
+            currentWindow.title || '',
+            category,
+          ]
+        );
+      }
     } catch (error) {
       console.error('Error tracking active window:', error);
     }
   }, 1000);
+});
+
+// IPC: Fetch activity logs (for timeline/history)
+import { ipcMain } from 'electron';
+ipcMain.handle('fetch-activity-logs', async (event, { since }) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      'SELECT * FROM activity_logs WHERE timestamp >= ? ORDER BY timestamp ASC',
+      [since],
+      (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      }
+    );
+  });
 });
 
 app.on('window-all-closed', () => {

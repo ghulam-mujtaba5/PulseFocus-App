@@ -11,6 +11,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electron', {
   sendToMain: (message) => ipcRenderer.send('window-control', message),
   onActiveWindow: (callback) => ipcRenderer.on('active-window', (event, data) => callback(data)),
+  fetchActivityLogs: async (since) => ipcRenderer.invoke('fetch-activity-logs', { since }),
 });
 // preload.js
 
@@ -33,5 +34,6 @@ window.addEventListener('DOMContentLoaded', () => {
       // Send a message to the main process
       sendToMain: (message) => ipcRenderer.send('message', message),
       onActiveWindow: (callback) => ipcRenderer.on('active-window', (event, data) => callback(data)),
+      fetchActivityLogs: async (since) => ipcRenderer.invoke('fetch-activity-logs', { since }),
   };
 });
