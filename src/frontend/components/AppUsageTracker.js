@@ -1,38 +1,73 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+
+// Activity categories for Rize-style tracking
+const CATEGORY_MAP = {
+  focus: ['code', 'editor', 'word', 'excel', 'notepad', 'chrome', 'firefox', 'edge'],
+  meeting: ['zoom', 'teams', 'meet', 'skype', 'webex'],
+  break: ['spotify', 'vlc', 'music', 'video', 'game'],
+  distraction: ['twitter', 'facebook', 'instagram', 'youtube', 'tiktok', 'reddit'],
+};
+
+const getCategory = (window) => {
+  if (!window || !window.owner || !window.owner.name) return 'other';
+  const name = window.owner.name.toLowerCase();
+  for (const [cat, keywords] of Object.entries(CATEGORY_MAP)) {
+    if (keywords.some((kw) => name.includes(kw))) return cat;
+  }
+  return 'other';
+};
+
 const ProductivityTracker = () => {
-  const [activity, setActivity] = useState('study');
+  const [activity, setActivity] = useState('focus');
   const [activeTime, setActiveTime] = useState(0);
   const [totalTime, setTotalTime] = useState({
-    study: 0,
-    work: 0,
+    focus: 0,
+    meeting: 0,
+    break: 0,
+    distraction: 0,
     other: 0,
   });
-  const [isTracking, setIsTracking] = useState(false);
-  const [startTime, setStartTime] = useState(null);
+  const [isTracking, setIsTracking] = useState(true);
+  const [startTime, setStartTime] = useState(Date.now());
   const [remainingTime, setRemainingTime] = useState(0);
+  const lastCategory = useRef('focus');
 
+
+  // Listen for active window changes from Electron
+  useEffect(() => {
+    if (window.electron && window.electron.onActiveWindow) {
+      const handler = (win) => {
+        const cat = getCategory(win);
+        setActivity(cat);
+        setTotalTime((prev) => ({
+          ...prev,
+          [cat]: prev[cat] + 1,
+        }));
+        lastCategory.current = cat;
+      };
+      window.electron.onActiveWindow(handler);
+      return () => {
+        // No off method in this simple bridge, so nothing to clean up
+      };
+    }
+  }, []);
+
+  // Track active time for current category
   useEffect(() => {
     let interval;
     if (isTracking) {
-      if (startTime === null) {
-        setStartTime(Date.now() - activeTime * 1000);
-      }
-
       interval = setInterval(() => {
-        setActiveTime(Math.floor((Date.now() - startTime) / 1000));
+        setActiveTime((t) => t + 1);
       }, 1000);
-    } else {
-      clearInterval(interval);
     }
-
     return () => clearInterval(interval);
-  }, [isTracking, startTime, activeTime]);
+  }, [isTracking]);
 
   const handleStartStop = () => {
     setIsTracking((prevState) => !prevState);
@@ -73,12 +108,13 @@ const ProductivityTracker = () => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+
   const chartData = {
-    labels: ['Study', 'Work', 'Other'],
+    labels: ['Focus', 'Meeting', 'Break', 'Distraction', 'Other'],
     datasets: [
       {
-        label: 'Activity Time (in seconds)',
-        data: [totalTime.study, totalTime.work, totalTime.other],
+        label: 'Activity Time (seconds)',
+        data: [totalTime.focus, totalTime.meeting, totalTime.break, totalTime.distraction, totalTime.other],
         fill: false,
         borderColor: '#4CAF50',
         tension: 0.1,
@@ -115,7 +151,7 @@ const ProductivityTracker = () => {
           </div>
           <div style={styles.widgetContent}>
             <p style={styles.time}>{activity.charAt(0).toUpperCase() + activity.slice(1)}</p>
-            <p style={styles.time}>{formatTime(activeTime)}</p>
+            <p style={styles.time}>{formatTime(totalTime[activity])}</p>
             {remainingTime > 0 && !isTracking && (
               <p style={styles.remainingTime}>Paused: {formatTime(remainingTime)}</p>
             )}

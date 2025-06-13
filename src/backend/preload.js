@@ -10,6 +10,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   sendToMain: (message) => ipcRenderer.send('window-control', message),
+  onActiveWindow: (callback) => ipcRenderer.on('active-window', (event, data) => callback(data)),
 });
 // preload.js
 
@@ -31,5 +32,6 @@ window.addEventListener('DOMContentLoaded', () => {
   window.electron = {
       // Send a message to the main process
       sendToMain: (message) => ipcRenderer.send('message', message),
+      onActiveWindow: (callback) => ipcRenderer.on('active-window', (event, data) => callback(data)),
   };
 });

@@ -67,9 +67,11 @@
 //   }
 // });
 
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+import activeWin from 'active-win';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -105,6 +107,17 @@ function createWindow() {
 
 app.on('ready', () => {
   createWindow();
+  // Start tracking active window and send to renderer
+  setInterval(async () => {
+    try {
+      const currentWindow = await activeWin();
+      if (mainWindow) {
+        mainWindow.webContents.send('active-window', currentWindow);
+      }
+    } catch (error) {
+      console.error('Error tracking active window:', error);
+    }
+  }, 1000);
 });
 
 app.on('window-all-closed', () => {

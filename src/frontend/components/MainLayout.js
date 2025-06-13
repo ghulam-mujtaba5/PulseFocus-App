@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, CssBaseline, AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, ThemeProvider, createTheme, Tooltip, Avatar, Menu, MenuItem, Divider, Badge, Popover, ListItemAvatar, ListItemSecondaryAction } from '@mui/material';
+import { Box, CssBaseline, AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, ThemeProvider, createTheme, Tooltip, Avatar, Menu, MenuItem, Divider, Badge, Popover, ListItemAvatar, ListItemSecondaryAction, InputBase, Paper, List as MUIList } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -26,11 +27,43 @@ const MainLayout = ({ children, onNav }) => {
     { id: 2, title: 'Habit Streak', message: 'You hit a 7-day streak!', time: 'Today', read: false },
     { id: 3, title: 'New Feature', message: 'Calendar view is now available.', time: 'Yesterday', read: true },
   ]);
+  const [search, setSearch] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Simulated search data (replace with real search logic)
+  const allData = [
+    { type: 'Task', label: 'Quarterly Report', id: 1 },
+    { type: 'Habit', label: 'Morning Workout', id: 2 },
+    { type: 'User', label: 'John Doe', id: 3 },
+    { type: 'Task', label: 'Team Meeting', id: 4 },
+    { type: 'Habit', label: 'Read a Book', id: 5 },
+  ];
 
   const unreadCount = notifications.filter(n => !n.read).length;
   const handleNotifOpen = (event) => setNotifAnchor(event.currentTarget);
   const handleNotifClose = () => setNotifAnchor(null);
   const handleNotifMarkRead = (id) => setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (value.length > 1) {
+      setSearchResults(allData.filter(item => item.label.toLowerCase().includes(value.toLowerCase())));
+      setSearchOpen(true);
+    } else {
+      setSearchResults([]);
+      setSearchOpen(false);
+    }
+  };
+  const handleSearchResultClick = (item) => {
+    setSearch('');
+    setSearchResults([]);
+    setSearchOpen(false);
+    // Optionally, navigate or focus the item
+    if (item.type === 'Task') onNav('tasks');
+    if (item.type === 'Habit') onNav('dashboard');
+    if (item.type === 'User') onNav('profile');
+  };
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
@@ -92,6 +125,35 @@ const MainLayout = ({ children, onNav }) => {
             <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 1, color: 'primary.main' }}>
               PulseFocus Enterprise
             </Typography>
+            {/* Global Search */}
+            <Paper component="form" sx={{ display: 'flex', alignItems: 'center', width: 260, mr: 2, borderRadius: 2, boxShadow: 0, bgcolor: 'background.default', border: 1, borderColor: 'divider' }} elevation={0}>
+              <InputBase
+                sx={{ ml: 1, flex: 1, fontSize: 15 }}
+                placeholder="Search tasks, habits, users..."
+                value={search}
+                onChange={handleSearchChange}
+                inputProps={{ 'aria-label': 'search' }}
+                onFocus={() => search.length > 1 && setSearchOpen(true)}
+                onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
+              />
+              <IconButton type="submit" sx={{ p: 0.5 }} disabled>
+                <SearchIcon />
+              </IconButton>
+            </Paper>
+            {searchOpen && searchResults.length > 0 && (
+              <Paper sx={{ position: 'absolute', top: 56, left: '50%', transform: 'translateX(-50%)', width: 320, zIndex: 2000, maxHeight: 320, overflowY: 'auto', borderRadius: 2, boxShadow: 6 }}>
+                <MUIList dense>
+                  {searchResults.map(item => (
+                    <ListItem button key={item.id} onMouseDown={() => handleSearchResultClick(item)}>
+                      <ListItemAvatar>
+                        <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main', fontSize: 16 }}>{item.type[0]}</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary={item.label} secondary={item.type} />
+                    </ListItem>
+                  ))}
+                </MUIList>
+              </Paper>
+            )}
             <Tooltip title="Notifications">
               <IconButton color="primary" onClick={handleNotifOpen} sx={{ WebkitAppRegion: 'no-drag' }}>
                 <Badge badgeContent={unreadCount} color="error">
