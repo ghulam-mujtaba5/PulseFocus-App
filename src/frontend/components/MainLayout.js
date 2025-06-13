@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, CssBaseline, AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, ThemeProvider, createTheme, Tooltip, Avatar, Menu, MenuItem, Divider } from '@mui/material';
+import { Box, CssBaseline, AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, ThemeProvider, createTheme, Tooltip, Avatar, Menu, MenuItem, Divider, Badge, Popover, ListItemAvatar, ListItemSecondaryAction } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -19,6 +20,17 @@ const MainLayout = ({ children, onNav }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+  const [notifAnchor, setNotifAnchor] = useState(null);
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'Task Due', message: 'Finish quarterly report by 5pm', time: '2h ago', read: false },
+    { id: 2, title: 'Habit Streak', message: 'You hit a 7-day streak!', time: 'Today', read: false },
+    { id: 3, title: 'New Feature', message: 'Calendar view is now available.', time: 'Yesterday', read: true },
+  ]);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+  const handleNotifOpen = (event) => setNotifAnchor(event.currentTarget);
+  const handleNotifClose = () => setNotifAnchor(null);
+  const handleNotifMarkRead = (id) => setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
@@ -80,6 +92,52 @@ const MainLayout = ({ children, onNav }) => {
             <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 1, color: 'primary.main' }}>
               PulseFocus Enterprise
             </Typography>
+            <Tooltip title="Notifications">
+              <IconButton color="primary" onClick={handleNotifOpen} sx={{ WebkitAppRegion: 'no-drag' }}>
+                <Badge badgeContent={unreadCount} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Popover
+              open={Boolean(notifAnchor)}
+              anchorEl={notifAnchor}
+              onClose={handleNotifClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              PaperProps={{ sx: { minWidth: 320, maxWidth: 400, p: 1 } }}
+            >
+              <Typography variant="subtitle1" sx={{ px: 2, pt: 1, fontWeight: 600 }}>Notifications</Typography>
+              <Divider sx={{ my: 1 }} />
+              <List dense>
+                {notifications.length === 0 && (
+                  <ListItem><ListItemText primary="No notifications" /></ListItem>
+                )}
+                {notifications.map(n => (
+                  <ListItem key={n.id} alignItems="flex-start" sx={{ bgcolor: n.read ? 'background.default' : '#e3f2fd', borderRadius: 1, mb: 0.5 }}>
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: n.read ? 'grey.400' : 'primary.main', width: 32, height: 32 }}>{n.title[0]}</Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={<Typography fontWeight={n.read ? 400 : 700}>{n.title}</Typography>}
+                      secondary={<>
+                        <Typography variant="body2" color="text.secondary">{n.message}</Typography>
+                        <Typography variant="caption" color="text.secondary">{n.time}</Typography>
+                      </>}
+                    />
+                    {!n.read && (
+                      <ListItemSecondaryAction>
+                        <Tooltip title="Mark as read">
+                          <IconButton edge="end" size="small" onClick={() => handleNotifMarkRead(n.id)}>
+                            <span style={{ width: 8, height: 8, display: 'inline-block', background: '#1976d2', borderRadius: 4 }} />
+                          </IconButton>
+                        </Tooltip>
+                      </ListItemSecondaryAction>
+                    )}
+                  </ListItem>
+                ))}
+              </List>
+            </Popover>
             <Tooltip title="Toggle light/dark mode">
               <IconButton color="primary" onClick={handleThemeToggle} sx={{ WebkitAppRegion: 'no-drag' }}>
                 {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
