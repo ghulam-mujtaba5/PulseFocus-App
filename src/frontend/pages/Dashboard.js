@@ -2689,13 +2689,17 @@
 // export default Dashboard;
 
 
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../services/supabaseClient.js'; 
-import TaskManager from '../components/TaskManager.js'; 
-import HabitTracker from '../components/HabitTracker.js'; 
-import { Line } from 'react-chartjs-2'; 
+import { supabase } from '../../services/supabaseClient.js';
+import TaskManager from '../components/TaskManager.js';
+import ProgressChart from '../components/ProgressChart.js';
+import HabitTracker from '../components/HabitTracker.js';
+import AppUsageTracker from '../components/AppUsageTracker.js';
+import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Box, Grid, Paper, Typography, Button, Stack } from '@mui/material';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -2710,122 +2714,12 @@ const Dashboard = () => {
   const [remainingTime, setRemainingTime] = useState(0);
   const navigate = useNavigate();
 
-  const styles = {
-    dashboard: {
-      padding: '20px',
-      fontFamily: 'Poppins, Arial, sans-serif',
-      textAlign: 'center',
-      background: 'linear-gradient(135deg, #4e73df, #1cc88a)',
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      justifyContent: 'flex-start',
-      transition: 'background 0.3s ease',
-    },
-    dashboardTitle: {
-      fontSize: '36px',
-      color: '#fff',
-      marginBottom: '30px',
-      textTransform: 'uppercase',
-      fontWeight: '700',
-      letterSpacing: '3px',
-    },
-    habitTrackerContainer: {
-      display: 'flex',
-      justifyContent: 'center',
-      gap: '20px',
-      flexWrap: 'wrap',
-      margin: '20px 0',
-    },
-    habitTracker: {
-      width: '300px',
-      background: '#f9f9f9',
-      padding: '20px',
-      borderRadius: '15px',
-      boxShadow: '0 8px 12px rgba(0, 0, 0, 0.1)',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-    },
-    habitTrackerHover: {
-      transform: 'scale(1.05)',
-      boxShadow: '0 12px 24px rgba(0, 0, 0, 0.1)',
-    },
-    dashboardMainContent: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-      gap: '20px',
-      marginTop: '30px',
-    },
-    widget: {
-      backgroundColor: '#fff',
-      padding: '20px',
-      borderRadius: '12px',
-      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-    },
-    widgetHover: {
-      transform: 'scale(1.05)',
-      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15)',
-    },
-    time: {
-      fontSize: '32px',
-      fontWeight: 'bold',
-      color: '#333',
-    },
-    button: {
-      padding: '12px 25px',
-      fontSize: '16px',
-      fontWeight: 'bold',
-      color: '#fff',
-      backgroundColor: '#4CAF50',
-      border: 'none',
-      borderRadius: '50px',
-      cursor: 'pointer',
-      transition: 'background-color 0.3s ease, transform 0.3s ease',
-    },
-    buttonHover: {
-      backgroundColor: '#45a049',
-      transform: 'scale(1.05)',
-    },
-    toggleButton: {
-      padding: '12px 20px',
-      backgroundColor: '#007bff',
-      color: 'white',
-      border: 'none',
-      borderRadius: '30px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      fontWeight: '500',
-      transition: 'background-color 0.3s ease, transform 0.3s ease',
-    },
-    toggleButtonHover: {
-      backgroundColor: '#0056b3',
-      transform: 'scale(1.05)',
-    },
-    signOutButton: {
-      padding: '10px 20px',
-      backgroundColor: '#f44336',
-      color: '#fff',
-      fontSize: '16px',
-      border: 'none',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      transition: 'background-color 0.3s ease',
-    },
-    signOutButtonHover: {
-      backgroundColor: '#d32f2f',
-    },
-  };
-
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setUser(session.user);
-      }
+      if (session) setUser(session.user);
       setLoading(false);
     };
-
     getSession();
   }, []);
 
@@ -2835,14 +2729,12 @@ const Dashboard = () => {
       if (startTime === null) {
         setStartTime(Date.now() - activeTime * 1000);
       }
-
       interval = setInterval(() => {
         setActiveTime(Math.floor((Date.now() - startTime) / 1000));
       }, 1000);
     } else {
       clearInterval(interval);
     }
-
     return () => clearInterval(interval);
   }, [isTracking, startTime, activeTime]);
 
@@ -2871,10 +2763,13 @@ const Dashboard = () => {
   };
 
   const handleActivityChange = (newActivity) => {
-    if (isTracking) {
-      handleReset();
-    }
+    if (isTracking) handleReset();
     setActivity(newActivity);
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/Login_Page');
   };
 
   const formatTime = (seconds) => {
@@ -2901,132 +2796,112 @@ const Dashboard = () => {
     responsive: true,
     scales: {
       x: {
-        title: {
-          display: true,
-          text: 'Activity',
-        },
+        title: { display: true, text: 'Activity' },
       },
       y: {
-        title: {
-          display: true,
-          text: 'Time (Seconds)',
-        },
+        title: { display: true, text: 'Time (Seconds)' },
       },
     },
   };
 
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut(); // Call the Supabase logout API
-    navigate('/Login_Page'); // Redirect to the login page
-    // setUser(null); // Reset the user state after signout
-
-  };
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return <div>Please log in first.</div>;
-  }
+  if (loading) return <Box p={4}><Typography variant="h6">Loading...</Typography></Box>;
+  if (!user) return <Box p={4}><Typography variant="h6">Please log in first.</Typography></Box>;
 
   return (
-    <div style={styles.dashboard}>
-      <h1 style={styles.dashboardTitle}>Welcome to your Dashboard</h1>
-
-      {/* Sign Out Button */}
-      <div>
-        <button
-          style={{ ...styles.signOutButton, ...styles.signOutButtonHover }}
-          onClick={handleSignOut}
-        >
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #4e73df, #1cc88a)', p: 3 }}>
+      <Typography variant="h4" sx={{ color: '#fff', mb: 3, fontWeight: 700, letterSpacing: 2 }}>
+        Welcome to your Dashboard
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+        <Button variant="contained" color="error" onClick={handleSignOut}>
           Sign Out
-        </button>
-      </div>
-
-      {/* Habit Tracker Section */}
-      <div style={styles.habitTrackerContainer}>
-        <div style={{ ...styles.habitTracker, ...styles.habitTrackerHover }}>
-          <HabitTracker
-            taskName="Morning Workout"
-            taskDescription="Start your day with some exercise to boost energy."
-            onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
-          />
-        </div>
-        <div style={{ ...styles.habitTracker, ...styles.habitTrackerHover }}>
-          <HabitTracker
-            taskName="Read a Book"
-            taskDescription="Spend 30 minutes reading a personal development book."
-            onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
-          />
-        </div>
-        <div style={{ ...styles.habitTracker, ...styles.habitTrackerHover }}>
-          <HabitTracker
-            taskName="Drink Water"
-            taskDescription="Drink a glass of water after waking up."
-            onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
-          />
-        </div>
-      </div>
-
-      {/* Productivity Tracker */}
-      <div style={styles.dashboardMainContent}>
-        <div style={styles.widget}>
-          <h3>Current Activity</h3>
-          <p>{activity.charAt(0).toUpperCase() + activity.slice(1)}</p>
-          <p>{formatTime(activeTime)}</p>
-          {remainingTime > 0 && !isTracking && (
-            <p>Paused: {formatTime(remainingTime)}</p>
-          )}
-          <div>
-            <button
-              style={{ ...styles.button, ...styles.buttonHover }}
-              onClick={handleStartStop}
-            >
-              {isTracking ? 'Pause' : 'Start'}
-            </button>
-            <button
-              style={{ ...styles.button, ...styles.buttonHover }}
-              onClick={handleReset}
-            >
-              Add Time
-            </button>
-          </div>
-        </div>
-
-        <div style={styles.widget}>
-          <h3>Activity Time Stats</h3>
-          <Line data={chartData} options={chartOptions} />
-        </div>
-
-        <div style={styles.widget}>
-          <h3>Activity Selector</h3>
-          <button
-            style={{ ...styles.button, ...styles.buttonHover }}
-            onClick={() => handleActivityChange('study')}
-          >
-            Study
-          </button>
-          <button
-            style={{ ...styles.button, ...styles.buttonHover }}
-            onClick={() => handleActivityChange('work')}
-          >
-            Work
-          </button>
-          <button
-            style={{ ...styles.button, ...styles.buttonHover }}
-            onClick={() => handleActivityChange('other')}
-          >
-            Other
-          </button>
-        </div>
-      </div>
-
-      {/* Conditionally render Task Manager */}
-      <div style={styles.dashboardMainContent}>
-        <TaskManager />
-      </div>
-    </div>
+        </Button>
+      </Box>
+      <Grid container spacing={3} sx={{ mb: 2 }}>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3 }}>
+            <HabitTracker
+              taskName="Morning Workout"
+              taskDescription="Start your day with some exercise to boost energy."
+              onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3 }}>
+            <HabitTracker
+              taskName="Read a Book"
+              taskDescription="Spend 30 minutes reading a personal development book."
+              onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3 }}>
+            <HabitTracker
+              taskName="Drink Water"
+              taskDescription="Drink a glass of water after waking up."
+              onComplete={(taskName) => console.log(`${taskName} has been completed.`)}
+            />
+          </Paper>
+        </Grid>
+      </Grid>
+      <Grid container spacing={3} sx={{ mb: 2 }}>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>Current Activity</Typography>
+            <Typography variant="subtitle1">{activity.charAt(0).toUpperCase() + activity.slice(1)}</Typography>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>{formatTime(activeTime)}</Typography>
+            {remainingTime > 0 && !isTracking && (
+              <Typography color="text.secondary">Paused: {formatTime(remainingTime)}</Typography>
+            )}
+            <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
+              <Button variant="contained" color={isTracking ? 'warning' : 'success'} onClick={handleStartStop}>
+                {isTracking ? 'Pause' : 'Start'}
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleReset}>
+                Add Time
+              </Button>
+            </Stack>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>Activity Time Stats</Typography>
+            <Line data={chartData} options={chartOptions} />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>Activity Selector</Typography>
+            <Stack direction="row" spacing={2} justifyContent="center">
+              <Button variant={activity === 'study' ? 'contained' : 'outlined'} onClick={() => handleActivityChange('study')}>Study</Button>
+              <Button variant={activity === 'work' ? 'contained' : 'outlined'} onClick={() => handleActivityChange('work')}>Work</Button>
+              <Button variant={activity === 'other' ? 'contained' : 'outlined'} onClick={() => handleActivityChange('other')}>Other</Button>
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Grid container spacing={3} sx={{ mb: 2 }}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, height: '100%' }}>
+            <TaskManager />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, height: '100%' }}>
+            <ProgressChart />
+          </Paper>
+        </Grid>
+      </Grid>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 3 }}>
+            <AppUsageTracker />
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
