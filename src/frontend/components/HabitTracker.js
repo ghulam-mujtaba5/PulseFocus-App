@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../services/supabaseClient.js'; // Assuming supabaseClient.js is already set up
 
@@ -11,6 +9,8 @@ const HabitTracker = ({ taskName, taskDescription, onComplete, targetCount = 8, 
     taskDescription,
     targetCount,
   });
+  const [streak, setStreak] = useState(0);
+  const [completionDates, setCompletionDates] = useState([]);
 
   // Load habit progress from Supabase
   const loadProgressStatus = async () => {
@@ -28,6 +28,28 @@ const HabitTracker = ({ taskName, taskDescription, onComplete, targetCount = 8, 
     return data ? { completed: data.completed, count: data.count } : { completed: false, count: 0 };
   };
 
+  // Load streak and completion history
+  const loadStreakAndHistory = async () => {
+    const { data, error } = await supabase
+      .from('habits')
+      .select('completed, updated_at')
+      .eq('task_name', taskName)
+      .order('updated_at', { ascending: false })
+      .limit(7);
+
+    if (error) {
+      console.error('Error loading habit history:', error);
+      return { streak: 0, dates: [] };
+    }
+
+    const dates = data.map(item => new Date(item.updated_at).toISOString().slice(0, 10));
+    const uniqueDates = [...new Set(dates)];
+    const currentStreak = uniqueDates.filter(date => date === uniqueDates[0]).length;
+
+    setCompletionDates(uniqueDates);
+    setStreak(currentStreak);
+  };
+
   useEffect(() => {
     // Fetch the progress status when the component mounts
     const fetchProgress = async () => {
@@ -37,6 +59,11 @@ const HabitTracker = ({ taskName, taskDescription, onComplete, targetCount = 8, 
 
     fetchProgress();
   }, [taskName]);
+
+  useEffect(() => {
+    // Fetch streak and history data
+    loadStreakAndHistory();
+  }, [taskName, progress.completed]);
 
   const handleIncrement = useCallback(async (e) => {
     e.stopPropagation();
@@ -104,6 +131,17 @@ const HabitTracker = ({ taskName, taskDescription, onComplete, targetCount = 8, 
         count: progress.count,
       })
       .single();
+  };
+
+  // Helper: get last 7 days as ISO strings
+  const getLast7Days = () => {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push(d.toISOString().slice(0, 10));
+    }
+    return days;
   };
 
   const progressBarWidth = `${(progress.count / editableTaskDetails.targetCount) * 100}%`;
@@ -231,6 +269,27 @@ const HabitTracker = ({ taskName, taskDescription, onComplete, targetCount = 8, 
       onClick={handleComplete} // Card click toggles completion status
     >
       <div style={styles.checkMark}>{progress.completed ? '✔️' : ''}</div>
+
+      {/* Streak and history visualization */}
+      <div style={{ marginBottom: 10 }}>
+        <span style={{ fontWeight: 600, color: '#1976d2' }}>🔥 Streak: {streak} day{streak !== 1 ? 's' : ''}</span>
+        <div style={{ display: 'flex', gap: 4, marginTop: 4, justifyContent: 'center' }}>
+          {getLast7Days().map(day => (
+            <span
+              key={day}
+              title={day}
+              style={{
+                display: 'inline-block',
+                width: 14,
+                height: 14,
+                borderRadius: 7,
+                background: completionDates && completionDates.some(d => d.slice(0, 10) === day) ? '#4caf50' : '#e0e0e0',
+                border: '1px solid #bdbdbd',
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
       {isEditing ? (
         <div>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient.js';
 import { DataGrid, GridToolbar, GridActionsCellItem } from '@mui/x-data-grid';
-import { Box, Paper, Typography, Snackbar, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Tooltip } from '@mui/material';
+import { Box, Paper, Typography, Snackbar, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Tooltip, MenuItem, InputAdornment } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,11 +14,12 @@ const TaskManager = () => {
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState('add'); // 'add' or 'edit'
-  const [formData, setFormData] = useState({ title: '', description: '', due_date: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', due_date: '', priority: 'Medium', tags: '' });
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [selectionModel, setSelectionModel] = useState([]);
 
+  const [search, setSearch] = useState('');
   useEffect(() => {
     const fetchTasks = async () => {
       setLoading(true);
@@ -27,7 +28,7 @@ const TaskManager = () => {
         if (error) {
           setSnackbar({ open: true, message: 'Error fetching tasks: ' + error.message, severity: 'error' });
         } else {
-          setTasks(data);
+          setTasks(Array.isArray(data) ? data : []);
         }
       } catch (err) {
         setSnackbar({ open: true, message: 'Unexpected error occurred', severity: 'error' });
@@ -42,10 +43,16 @@ const TaskManager = () => {
   const handleFormOpen = (mode, task) => {
     setFormMode(mode);
     if (mode === 'edit' && task) {
-      setFormData({ title: task.title, description: task.description, due_date: task.due_date });
+      setFormData({
+        title: task.title,
+        description: task.description,
+        due_date: task.due_date,
+        priority: task.priority || 'Medium',
+        tags: task.tags || '',
+      });
       setEditingTaskId(task.id);
     } else {
-      setFormData({ title: '', description: '', due_date: '' });
+      setFormData({ title: '', description: '', due_date: '', priority: 'Medium', tags: '' });
       setEditingTaskId(null);
     }
     setFormOpen(true);
@@ -85,6 +92,8 @@ const TaskManager = () => {
           title: formData.title,
           description: formData.description,
           due_date: formData.due_date,
+          priority: formData.priority,
+          tags: formData.tags,
         }).eq('id', editingTaskId);
         if (error) {
           setSnackbar({ open: true, message: 'Error editing task: ' + error.message, severity: 'error' });
@@ -182,6 +191,8 @@ const TaskManager = () => {
   const columns = [
     { field: 'title', headerName: 'Title', flex: 1, minWidth: 150 },
     { field: 'description', headerName: 'Description', flex: 2, minWidth: 200 },
+    { field: 'priority', headerName: 'Priority', flex: 0.7, minWidth: 100 },
+    { field: 'tags', headerName: 'Tags', flex: 1, minWidth: 120 },
     { field: 'due_date', headerName: 'Due Date', type: 'date', flex: 1, minWidth: 120, valueGetter: (params) => params.value ? new Date(params.value) : null, valueFormatter: (params) => params.value ? new Date(params.value).toLocaleDateString() : '' },
     { field: 'completed', headerName: 'Completed', type: 'boolean', flex: 0.7, minWidth: 100, renderCell: (params) => params.value ? <CheckCircleIcon color="success" /> : <CancelIcon color="disabled" /> },
     {
@@ -198,32 +209,65 @@ const TaskManager = () => {
     },
   ];
 
+  // Filter tasks by search
+  const filteredTasks = tasks.filter(task => {
+    const searchLower = search.toLowerCase();
+    return (
+      task.title.toLowerCase().includes(searchLower) ||
+      task.description.toLowerCase().includes(searchLower) ||
+      (task.tags || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <Box sx={{ width: '100%', maxWidth: 900, mx: 'auto', mt: 3 }}>
       <Typography variant="h5" fontWeight={700} mb={2} align="center">Task Manager</Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-        <Button variant="contained" color="primary" onClick={() => handleFormOpen('add')}>
-          Add Task
-        </Button>
-        {selectionModel.length > 0 && (
-          <Button variant="outlined" color="error" sx={{ ml: 2 }} onClick={handleBulkDelete}>
-            Delete Selected
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+        <TextField
+          placeholder="Search tasks..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          size="small"
+          sx={{ width: 260 }}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">🔍</InputAdornment>,
+          }}
+        />
+        <Box>
+          <Button variant="contained" color="primary" onClick={() => handleFormOpen('add')}>
+            Add Task
           </Button>
-        )}
+          {selectionModel.length > 0 && (
+            <Button variant="outlined" color="error" sx={{ ml: 2 }} onClick={handleBulkDelete}>
+              Delete Selected
+            </Button>
+          )}
+        </Box>
       </Box>
       <Paper elevation={4} sx={{ height: 520, width: '100%', mb: 2 }}>
-        <DataGrid
-          rows={tasks}
-          columns={columns}
-          getRowId={row => row.id}
-          loading={loading}
-          checkboxSelection
-          disableRowSelectionOnClick
-          onRowSelectionModelChange={setSelectionModel}
-          rowSelectionModel={selectionModel}
-          slots={{ toolbar: GridToolbar }}
-          sx={{ fontSize: 15, borderRadius: 2, bgcolor: 'background.paper' }}
-        />
+        {(() => {
+          const safeRows = Array.isArray(filteredTasks) ? filteredTasks : [];
+          const safeColumns = Array.isArray(columns) ? columns : [];
+          const safeSelectionModel = Array.isArray(selectionModel) ? selectionModel : [];
+          // Debug log
+          if (!Array.isArray(filteredTasks) || !Array.isArray(columns) || !Array.isArray(selectionModel)) {
+            console.error('DataGrid prop type error:', { filteredTasks, columns, selectionModel });
+          }
+          return (
+            <DataGrid
+              rows={safeRows}
+              columns={safeColumns}
+              getRowId={row => row.id}
+              loading={loading}
+              // checkboxSelection
+              // disableRowSelectionOnClick
+              // onRowSelectionModelChange={model => setSelectionModel(Array.isArray(model) ? model : [])}
+              // rowSelectionModel={safeSelectionModel}
+              slots={{ toolbar: GridToolbar }}
+              sx={{ fontSize: 15, borderRadius: 2, bgcolor: 'background.paper' }}
+            />
+          );
+        })()}
       </Paper>
       {/* Task Form Dialog */}
       <Dialog open={formOpen} onClose={handleFormClose} maxWidth="sm" fullWidth>
@@ -246,6 +290,27 @@ const TaskManager = () => {
             fullWidth
             multiline
             minRows={2}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Priority"
+            name="priority"
+            select
+            value={formData.priority}
+            onChange={handleFormChange}
+            fullWidth
+            sx={{ mb: 2 }}
+          >
+            <MenuItem value="Low">Low</MenuItem>
+            <MenuItem value="Medium">Medium</MenuItem>
+            <MenuItem value="High">High</MenuItem>
+          </TextField>
+          <TextField
+            label="Tags (comma separated)"
+            name="tags"
+            value={formData.tags}
+            onChange={handleFormChange}
+            fullWidth
             sx={{ mb: 2 }}
           />
           <TextField

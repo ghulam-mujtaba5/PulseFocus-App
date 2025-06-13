@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { Box, CssBaseline, AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, ThemeProvider, createTheme, Tooltip, Avatar, Menu, MenuItem, Divider, Badge, Popover, ListItemAvatar, ListItemSecondaryAction, InputBase, Paper, List as MUIList } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -252,7 +253,9 @@ const MainLayout = ({ children, onNav }) => {
 
         <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
           <Toolbar />
-          <Box sx={{ flexGrow: 1 }}>{children}</Box>
+          <Box sx={{ flexGrow: 1 }}>
+            <Outlet />
+          </Box>
           {/* Desktop-style status bar/footer */}
           <Box sx={{ height: 32, bgcolor: (theme) => theme.palette.mode === 'dark' ? '#23272b' : '#e3e6ea', color: 'text.secondary', display: 'flex', alignItems: 'center', px: 2, borderTop: 1, borderColor: 'divider', fontSize: 14 }}>
             <span>PulseFocus &copy; {new Date().getFullYear()} &mdash; All systems operational</span>
