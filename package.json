@@ -11,7 +11,11 @@
     "make": "electron-builder"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@jridgewell/gen-mapping": "^0.3.5",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
     "@supabase/supabase-js": "^2.47.10",
     "active-win": "^9.0.0",
     "chart.js": "^4.4.7",

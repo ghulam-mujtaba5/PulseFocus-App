@@ -39,44 +39,56 @@
 import React, { useState, useEffect } from 'react';
 import { getCurrentUser } from '../services/authService.js'; // Adjust the path according to your folder structure
 
+
+import { Card, CardContent, Typography, Avatar, Box, CircularProgress } from '@mui/material';
+
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Track loading state
-  const [error, setError] = useState(null); // Track errors
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const { user, error } = await getCurrentUser();
         if (error) {
-          setError(error.message); // Show error message
+          setError(error.message);
         } else {
-          setUser(user); // Set user data if successful
+          setUser(user);
         }
       } catch (error) {
-        setError('Failed to fetch user data'); // Handle unexpected errors
+        setError('Failed to fetch user data');
       } finally {
-        setLoading(false); // Stop loading once the operation is done
+        setLoading(false);
       }
     };
-
     fetchUser();
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, []);
 
   return (
-    <div style={styles.profileContainer}>
+    <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
       {loading ? (
-        <p style={styles.loadingText}>Loading...</p>
+        <CircularProgress />
       ) : error ? (
-        <p style={styles.errorText}>Error: {error}</p>
+        <Typography color="error">Error: {error}</Typography>
       ) : (
-        <>
-          <h2 style={styles.welcomeText}>Welcome, {user.name}</h2>
-          <p style={styles.userInfo}>Email: {user.email}</p>
-          {/* You can add more user data here */}
-        </>
+        <Card sx={{ minWidth: 350, p: 2, boxShadow: 3 }}>
+          <CardContent>
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <Avatar sx={{ width: 80, height: 80, mb: 2 }}>
+                {user.name ? user.name[0].toUpperCase() : '?'}
+              </Avatar>
+              <Typography variant="h5" gutterBottom>
+                {user.name || 'User'}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {user.email}
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
       )}
-    </div>
+    </Box>
   );
 };
 

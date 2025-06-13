@@ -6,12 +6,11 @@
 // //   onMessage: (channel, callback) => ipcRenderer.on(channel, callback),
 // // });
 // // CommonJS syntax for preload.js
-// const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
-// contextBridge.exposeInMainWorld('electron', {
-//   // Expose methods here to interact with main process
-//   sendToMain: (message) => ipcRenderer.send('message', message),
-// });
+contextBridge.exposeInMainWorld('electron', {
+  sendToMain: (message) => ipcRenderer.send('window-control', message),
+});
 // preload.js
 
 // All the Node.js APIs are available in the preload process.
