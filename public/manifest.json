@@ -1,0 +1,21 @@
+{
+  "short_name": "PulseFocus",
+  "name": "PulseFocus App",
+  "icons": [
+    {
+      "src": "public/Project_preview1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "public/Project_preview2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#1976d2",
+  "description": "A modern productivity and focus app with desktop-like experience."
+}
